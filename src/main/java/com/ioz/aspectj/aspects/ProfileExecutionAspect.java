@@ -11,8 +11,8 @@ import com.ioz.aspectj.Profiler;
 public class ProfileExecutionAspect
 {
 	@SuppressAjWarnings( "adviceDidNotMatch" )
-	@Around( "execution(* *(..)) && @annotation(com.ioz.aspectj.annotations.LogExecutionTime)" )
-	public Object profile( ProceedingJoinPoint joinPoint/*, LogExecutionTime logExecutionTime*/ ) throws Throwable
+	@Around( "execution(* *(..)) && @annotation(com.ioz.aspectj.annotations.ProfileExecution)" )
+	public Object profile( ProceedingJoinPoint joinPoint ) throws Throwable
 	{
 		final long start = System.currentTimeMillis();
 		final Object proceed = joinPoint.proceed();

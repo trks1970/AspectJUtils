@@ -1,7 +1,11 @@
 package com.ioz.aspectj;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class Profiler
 {
@@ -21,6 +25,44 @@ public class Profiler
 	public Map<String, Map<String, TimeSpent>> getProfileData()
 	{
 		return profileData;
+	}
+
+	public void reset()
+	{
+		profileData = new HashMap<>();
+	}
+
+	public String getProfileInfo()
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append( "--- Profile Info ---" );
+		for( String className : profileData.keySet() )
+		{
+			builder.append( "\r\n" );
+			builder.append( className );
+			builder.append( ":\r\n" );
+			Map<String, TimeSpent> times = sortByValue( profileData.get( className ) );
+			for( String method : times.keySet() )
+			{
+				builder.append( "   " );
+				builder.append( method );
+				builder.append( ":\r\n      " );
+				TimeSpent ts = profileData.get( className ).get( method );
+				builder.append( "invocations:" );
+				builder.append( ts.getExecutionCount() );
+				builder.append( "\r\n      " );
+				builder.append( "total time:" );
+				builder.append( ts.getTotalExecution() );
+				builder.append( "\r\n      " );
+				builder.append( "avg time:" );
+				builder.append( ts.getTotalExecution() / ts.getExecutionCount() );
+				builder.append( "\r\n      " );
+				builder.append( "max time:" );
+				builder.append( ts.getMaxExecution() );
+				builder.append( "\r\n" );
+			}
+		}
+		return builder.toString();
 	}
 
 	public void addExecution( String className, String methodName, long time )
@@ -46,11 +88,23 @@ public class Profiler
 		return ts;
 	}
 
-	public class TimeSpent
+	private <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map )
 	{
-		private long executionCount;
-		private long maxExecution;
-		private long totalExecution;
+		List<Entry<K, V>> list = new ArrayList<>( map.entrySet() );
+		list.sort( Entry.comparingByValue() );
+		Map<K, V> result = new LinkedHashMap<>();
+		for( Entry<K, V> entry : list )
+		{
+			result.put( entry.getKey(), entry.getValue() );
+		}
+		return result;
+	}
+
+	public class TimeSpent implements Comparable<TimeSpent>
+	{
+		private Long executionCount = 0L;
+		private Long maxExecution = 0L;
+		private Long totalExecution = 0L;
 
 		public long getExecutionCount()
 		{
@@ -75,6 +129,12 @@ public class Profiler
 			{
 				maxExecution = time;
 			}
+		}
+
+		@Override
+		public int compareTo( TimeSpent o )
+		{
+			return totalExecution.compareTo( o.totalExecution );
 		}
 
 	}

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ioz</groupId>
 	<artifactId>aspectj-utils</artifactId>
-	<version>1.1.0-RELEASE</version>
+	<version>1.1.1-RELEASE</version>
 	<name>AspectjUtils</name>
 	<packaging>jar</packaging>
 	<properties>
